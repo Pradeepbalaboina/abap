@@ -1,1 +1,88 @@
 
+REPORT you_know_oo_friends.
+*<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+*  The class to which friendship is granted can access
+*  all the components (irrespective of components visibility)
+*  of the friendship granting class
+*
+*  This Friendship is unilateral
+*
+* The sub-classes and interfaces of a class (to which friendship is granted),
+* can also access the non-public components of a class (friendship granting class).
+*
+* If A is friend of B ( Class A Defination Friends B )
+* The sub-classes of B can access A
+* A and sub-classes of A cannot accesses B
+*<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+
+CLASS lcl_friend2 DEFINITION DEFERRED.
+CLASS lcl_friend1 DEFINITION FRIENDS lcl_friend2.
+  PUBLIC SECTION.
+    METHODS: m1.
+  PROTECTED SECTION.
+    METHODS: m2.
+  PRIVATE SECTION.
+    METHODS m3.
+ENDCLASS.
+
+CLASS lcl_friend1 IMPLEMENTATION.
+  METHOD m1.
+    WRITE:/ 'Public method of FRIEND 1'.
+    m2( ).
+  ENDMETHOD.
+  METHOD m2.
+    WRITE:/ 'Protected method of FRIEND 1'.
+    m3( ).
+  ENDMETHOD.
+  METHOD m3.
+    WRITE:/ 'Private method of FRIEND 1'.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_friend2 DEFINITION.
+  PUBLIC SECTION.
+    METHODS: m3.
+  PROTECTED SECTION.
+    METHODS: m4.
+  PRIVATE SECTION.
+    METHODS m5.
+ENDCLASS.
+
+CLASS lcl_friend2 IMPLEMENTATION.
+  METHOD m3.
+    WRITE:/ 'Public method of FRIEND 2'.
+    DATA(ob) = NEW lcl_friend1( ).
+    ob->m3( ).
+    m4( ).
+  ENDMETHOD.
+  METHOD m4.
+    WRITE:/ 'Protected method of FRIEND 2'.
+    m5( ).
+  ENDMETHOD.
+  METHOD m5.
+    WRITE:/ 'Private method of FRIEND 2'.
+  ENDMETHOD.
+ENDCLASS.
+
+
+CLASS lcl_inh DEFINITION INHERITING FROM lcl_friend2.
+  PUBLIC SECTION.
+    METHODS m6.
+ENDCLASS.
+
+CLASS lcl_inh IMPLEMENTATION.
+  METHOD m6.
+    WRITE:/ 'Public method of Sub class'.
+    DATA(obb) = NEW lcl_friend1( ).
+    obb->m3( ).
+  ENDMETHOD.
+ENDCLASS.
+
+
+START-OF-SELECTION.
+  DATA(object1) = NEW lcl_friend1( ).
+  DATA(object2) = NEW lcl_friend2( ).
+
+  object1->m1( ).
+  object2->m3( ).
